@@ -20,3 +20,6 @@ class PokemonEntity(models.Model):
     damage = models.IntegerField(default=0)
     protection = models.IntegerField(default=0)
     stamina = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f'Entity {self.id} for {self.pokemon.title}'
