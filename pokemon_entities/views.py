@@ -55,31 +55,32 @@ def show_all_pokemons(request):
 def show_pokemon(request, pokemon_id):
     try:
         requested_pokemon = Pokemon.objects.get(id=pokemon_id)
-        try:
-            previous_evolution = Pokemon.objects.get(next_evolution=int(pokemon_id))
-        except Pokemon.DoesNotExist:
-            previous_evolution = None
-
-        pokemon = {
-            'pokemon_id': requested_pokemon.id,
-            'img_url': requested_pokemon.image.url,
-            'title_ru': requested_pokemon.title,
-            'title_en': requested_pokemon.title_en,
-            'title_jp': requested_pokemon.title_jp,
-            'description': requested_pokemon.description,
-            'previous_evolution': {
-                'pokemon_id': previous_evolution.id,
-                'img_url': previous_evolution.image.url,
-                'title_ru': previous_evolution.title,
-            } if previous_evolution else None,
-            'next_evolution': {
-                'pokemon_id': requested_pokemon.next_evolution.id,
-                'img_url': requested_pokemon.next_evolution.image.url,
-                'title_ru': requested_pokemon.next_evolution.title,
-            } if requested_pokemon.next_evolution else None,
-        }
     except Pokemon.DoesNotExist:
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
+
+    try:
+        previous_evolution = Pokemon.objects.get(next_evolution=int(pokemon_id))
+    except Pokemon.DoesNotExist:
+        previous_evolution = None
+
+    pokemon = {
+        'pokemon_id': requested_pokemon.id,
+        'img_url': requested_pokemon.image.url,
+        'title_ru': requested_pokemon.title,
+        'title_en': requested_pokemon.title_en,
+        'title_jp': requested_pokemon.title_jp,
+        'description': requested_pokemon.description,
+        'previous_evolution': {
+            'pokemon_id': previous_evolution.id,
+            'img_url': previous_evolution.image.url,
+            'title_ru': previous_evolution.title,
+        } if previous_evolution else None,
+        'next_evolution': {
+            'pokemon_id': requested_pokemon.next_evolution.id,
+            'img_url': requested_pokemon.next_evolution.image.url,
+            'title_ru': requested_pokemon.next_evolution.title,
+        } if requested_pokemon.next_evolution else None,
+    }
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     now = localtime()
