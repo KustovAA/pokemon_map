@@ -3,24 +3,24 @@ from django.db import models
 
 class Pokemon(models.Model):
     title = models.CharField(max_length=200, verbose_name='Название')
-    title_en = models.CharField(max_length=200, null=True, blank=True, verbose_name='Название на английском')
-    title_jp = models.CharField(max_length=200, null=True, blank=True, verbose_name='Название на японском')
+    title_en = models.CharField(max_length=200, default='', blank=True, verbose_name='Название на английском')
+    title_jp = models.CharField(max_length=200, default='', blank=True, verbose_name='Название на японском')
     image = models.ImageField(null=True, blank=True, verbose_name='Картинка')
-    description = models.TextField(null=True, blank=True, verbose_name='Лписание')
+    description = models.TextField(default='', blank=True, verbose_name='Описание')
     previous_evolution = models.ForeignKey(
-        'pokemon_entities.Pokemon',
+        to='pokemon_entities.Pokemon',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='pokemon_entities_Pokemon_previous_evolution',
+        related_name='pokemon_previous_evolution',
         verbose_name='Из кого эволюционирует'
     )
     next_evolution = models.ForeignKey(
-        'pokemon_entities.Pokemon',
+        to='pokemon_entities.Pokemon',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='pokemon_entities_Pokemon_next_evolution',
+        related_name='pokemon_next_evolution',
         verbose_name='В кого эволюционирует'
     )
 
@@ -31,7 +31,7 @@ class Pokemon(models.Model):
 class PokemonEntity(models.Model):
     lat = models.FloatField(verbose_name='Широта')
     lon = models.FloatField(verbose_name='Долгота')
-    pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, verbose_name='Покемон')
+    pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, related_name='pokemon', verbose_name='Покемон')
     appeared_at = models.DateTimeField(verbose_name='Время появления')
     disappeared_at = models.DateTimeField(verbose_name='Время исчезновения')
     level = models.IntegerField(default=0, verbose_name='Уровень')
