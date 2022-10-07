@@ -55,6 +55,11 @@ def show_all_pokemons(request):
 def show_pokemon(request, pokemon_id):
     try:
         requested_pokemon = Pokemon.objects.get(id=pokemon_id)
+        try:
+            previous_evolution = Pokemon.objects.get(next_evolution=int(pokemon_id))
+        except Pokemon.DoesNotExist:
+            previous_evolution = None
+
         pokemon = {
             'pokemon_id': requested_pokemon.id,
             'img_url': requested_pokemon.image.url,
@@ -63,10 +68,10 @@ def show_pokemon(request, pokemon_id):
             'title_jp': requested_pokemon.title_jp,
             'description': requested_pokemon.description,
             'previous_evolution': {
-                'pokemon_id': requested_pokemon.previous_evolution.id,
-                'img_url': requested_pokemon.previous_evolution.image.url,
-                'title_ru': requested_pokemon.previous_evolution.title,
-            } if requested_pokemon.previous_evolution else None,
+                'pokemon_id': previous_evolution.id,
+                'img_url': previous_evolution.image.url,
+                'title_ru': previous_evolution.title,
+            } if previous_evolution else None,
             'next_evolution': {
                 'pokemon_id': requested_pokemon.next_evolution.id,
                 'img_url': requested_pokemon.next_evolution.image.url,
