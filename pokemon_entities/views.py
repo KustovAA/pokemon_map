@@ -1,8 +1,7 @@
 import folium
-import json
 
 from django.http import HttpResponseNotFound
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import localtime
 
 from .models import Pokemon, PokemonEntity
@@ -53,15 +52,8 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    try:
-        requested_pokemon = Pokemon.objects.get(id=pokemon_id)
-    except Pokemon.DoesNotExist:
-        return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
-
-    try:
-        previous_evolution = Pokemon.objects.get(next_evolution=int(pokemon_id))
-    except Pokemon.DoesNotExist:
-        previous_evolution = None
+    requested_pokemon = get_object_or_404(Pokemon, id=pokemon_id)
+    previous_evolution = requested_pokemon.previous_evolution.first()
 
     pokemon = {
         'pokemon_id': requested_pokemon.id,
@@ -84,7 +76,8 @@ def show_pokemon(request, pokemon_id):
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     now = localtime()
-    for pokemon_entity in PokemonEntity.objects.filter(appeared_at__lt=now, disappeared_at__gte=now, pokemon_id=pokemon_id):
+    pokemon_entities = Pokemon.objects.get(id=pokemon_id).pokemon_entities.filter(appeared_at__lt=now, disappeared_at__gte=now)
+    for pokemon_entity in pokemon_entities:
         add_pokemon(
             folium_map, pokemon_entity.lat,
             pokemon_entity.lon,
