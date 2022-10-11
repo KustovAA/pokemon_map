@@ -53,7 +53,10 @@ def show_all_pokemons(request):
 
 def show_pokemon(request, pokemon_id):
     requested_pokemon = get_object_or_404(Pokemon, id=pokemon_id)
-    previous_evolution = requested_pokemon.previous_evolution.first()
+    next_evolution = requested_pokemon.next_evolution.first()
+    previous_evolution = requested_pokemon.previous_evolution
+    print(requested_pokemon.next_evolution)
+    print(requested_pokemon.previous_evolution)
 
     pokemon = {
         'pokemon_id': requested_pokemon.id,
@@ -68,10 +71,10 @@ def show_pokemon(request, pokemon_id):
             'title_ru': previous_evolution.title,
         } if previous_evolution else None,
         'next_evolution': {
-            'pokemon_id': requested_pokemon.next_evolution.id,
-            'img_url': requested_pokemon.next_evolution.image.url,
-            'title_ru': requested_pokemon.next_evolution.title,
-        } if requested_pokemon.next_evolution else None,
+            'pokemon_id': next_evolution.id,
+            'img_url': next_evolution.image.url,
+            'title_ru': next_evolution.title,
+        } if next_evolution else None,
     }
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
