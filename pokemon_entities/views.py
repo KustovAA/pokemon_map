@@ -52,19 +52,17 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    requested_pokemon = get_object_or_404(Pokemon, id=pokemon_id)
-    next_evolution = requested_pokemon.next_evolution.first()
-    previous_evolution = requested_pokemon.previous_evolution
-    print(requested_pokemon.next_evolution)
-    print(requested_pokemon.previous_evolution)
+    pokemon = get_object_or_404(Pokemon, id=pokemon_id)
+    next_evolution = pokemon.next_evolutions.first()
+    previous_evolution = pokemon.previous_evolution
 
-    pokemon = {
-        'pokemon_id': requested_pokemon.id,
-        'img_url': requested_pokemon.image.url,
-        'title_ru': requested_pokemon.title,
-        'title_en': requested_pokemon.title_en,
-        'title_jp': requested_pokemon.title_jp,
-        'description': requested_pokemon.description,
+    pokemon_serialized = {
+        'pokemon_id': pokemon.id,
+        'img_url': pokemon.image.url,
+        'title_ru': pokemon.title,
+        'title_en': pokemon.title_en,
+        'title_jp': pokemon.title_jp,
+        'description': pokemon.description,
         'previous_evolution': {
             'pokemon_id': previous_evolution.id,
             'img_url': previous_evolution.image.url,
@@ -79,7 +77,7 @@ def show_pokemon(request, pokemon_id):
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     now = localtime()
-    pokemon_entities = requested_pokemon.entities.filter(appeared_at__lt=now, disappeared_at__gte=now)
+    pokemon_entities = pokemon.entities.filter(appeared_at__lt=now, disappeared_at__gte=now)
     for pokemon_entity in pokemon_entities:
         add_pokemon(
             folium_map, pokemon_entity.lat,
@@ -88,5 +86,5 @@ def show_pokemon(request, pokemon_id):
         )
 
     return render(request, 'pokemon.html', context={
-        'map': folium_map._repr_html_(), 'pokemon': pokemon
+        'map': folium_map._repr_html_(), 'pokemon': pokemon_serialized
     })
