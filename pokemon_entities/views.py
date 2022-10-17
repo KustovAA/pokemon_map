@@ -56,7 +56,7 @@ def show_pokemon(request, pokemon_id):
     next_evolution = pokemon.next_evolutions.first()
     previous_evolution = pokemon.previous_evolution
 
-    pokemon_serialized = {
+    serialized_pokemon = {
         'pokemon_id': pokemon.id,
         'img_url': pokemon.image.url,
         'title_ru': pokemon.title,
@@ -86,5 +86,5 @@ def show_pokemon(request, pokemon_id):
         )
 
     return render(request, 'pokemon.html', context={
-        'map': folium_map._repr_html_(), 'pokemon': pokemon_serialized
+        'map': folium_map._repr_html_(), 'pokemon': serialized_pokemon
     })
